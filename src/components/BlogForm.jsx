@@ -49,10 +49,38 @@ const blogPosts = [
         const [posts, setPosts] = useState(blogPosts);
         const [formData, setFormData] = useState(initialFormData);
 
+        function handleFormData(e) {
+            const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+
+            setFormData((currentFormData) => ({
+                ...currentFormData,
+                [e.target.name]: value,
+            }));
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            setPosts((currentPosts) => [...currentPosts, {id: currentPosts[currentPosts.length - 1].id + 1, ...formData}]);
+            setPosts((currentPosts) => [...currentPosts, {
+                id:
+                currentPosts.length === 0 ? 1 : currentPosts[currentPosts.length - 1].id + 1,
+                ...formData
+            }]);
+
+            setFormData(initialFormData);
+        }
+
+        const removePost = i => {
+            const updatedPosts = posts.filter((post,index) => {
+              return index != i
+            });
+            setPosts(updatedPosts);
+          }
+
         return (
             <>
             <h2>Dati del blog</h2>
-            <form action="#">
+            <form id="formpost" action="#" onSubmit={handleSubmit}>
                 <input
                 type="text"
                 name="title"
@@ -69,13 +97,12 @@ const blogPosts = [
                 placeholder="Autore del blog"
                  />
 
-                <input
-                type="text"
+                <textarea
                 name="content"
                 onChange={handleFormData}
                 value={formData.content}
                 placeholder="Contenuto del blog"
-                 />
+                ></textarea>
 
                 <input
                 type="text"
@@ -84,6 +111,7 @@ const blogPosts = [
                 value={formData.category}
                 placeholder="Categoria"
                  />
+                 <button>AGGIUNGI POST</button>
             </form>
 
 
@@ -97,6 +125,7 @@ const blogPosts = [
                         <h2>{post.author}</h2>
                         <h2>{post.content}</h2>
                         <h2>{post.category}</h2>
+                        <button onClick={() => removePost(post.id)}>CANCELLA POST</button>
                     </div>
 
                 ))
